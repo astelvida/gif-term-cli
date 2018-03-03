@@ -1,0 +1,50 @@
+{
+    "name": "@astelvida/gifcat-cli",
+    "version": "1.0.0",
+    "description": "Translate text to gifs - CLI tool",
+    "license": "MIT",
+    "author": {
+        "name": "astelvida",
+        "email": "sevda.m.anefi@gmail.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": ""
+    },
+    "dependencies": {
+        "@astelvida/gifcat": "^1.0.4",
+        "ansi-escapes": "^3.0.0",
+        "chalk": "^2.3.1",
+        "clipboardy": "^1.2.3",
+        "debounce": "^1.1.0",
+        "get-cursor-position": "^1.0.5",
+        "got": "^8.2.0",
+        "lodash.debounce": "^4.0.8",
+        "meow": "^4.0.0",
+        "prompts": "^0.1.1",
+        "random-emoji": "^1.0.2",
+        "random-word-wikipedia": "^1.0.5",
+        "supervillains": "^1.0.0",
+        "terminal-char-width": "^1.0.8"
+    },
+    "devDependencies": {
+        "ava": "^0.25.0"
+    },
+    "keywords": [
+        "gif",
+        "gifs",
+        "giphy",
+        "image",
+        "iterm",
+        "iterm2",
+        "terminal",
+        "console",
+        "shell",
+        "command-line",
+        "cli",
+        "text",
+        "stickers",
+        "app",
+        "version"
+    ]
+}
