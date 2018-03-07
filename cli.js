@@ -3,24 +3,24 @@
 const path = require('path');
 const meow = require('meow');
 
-const { run } = require('./index.js');
+const { search } = require('./search.js');
 
 const cli = meow(
     `
         Usage
-        $  gif-term <text>
+        $ gif-term <text>
     
         Options
-        --sticker -s    Get a sticker gif
+        --sticker -s    Get a sticker gif 
         --clip -c       Copy gif url to clipboard
-        --height -h     Set gif height
-        --width -w      Set gif width
+        --height -h     Set gif height [Npx|N%|N|'auto']
+        --width -w      Set gif width [Npx|N%|N|'auto']
     
         Examples
-        $ gif-term 'monday cat'
+        $ gif-term 'this is awesome'
         $ gif-term 'facepalm' --clip --width=100%
 
-        Run it without arguments to enter search mode (similar to slack giphy).
+        Run it without arguments to enter search mode.
     `,
     {
         flags: {
@@ -49,4 +49,4 @@ const cli = meow(
 );
 
 
-run(cli.input[0], cli.flags);
+search(cli.input[0], cli.flags);

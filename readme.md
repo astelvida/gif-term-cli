@@ -1,41 +1,41 @@
 # gif-term-cli
 
->  Search for a GIF by a word or phrase and display it in the terminal. 
-*Inspired by Giphy for Slack.*
+>  Search GIFs by a word or phrase and display a match in the terminal. Like *Giphy for Slack*, but for the terminal.
 
-![](./demo.gif)
+![](./omg-awesome.gif)
 
 *Currently supported on [iTerm2 >= 3](https://www.iterm2.com/downloads.html).*
 
 ## Install
 
 ```
-$ npm install -g gif-term-cli
+$ npm install --global gif-term-cli
 ```
 
 ## Usage
 
 ```
-    Usage
-    $  gif-term <text>
+term-img --help
 
-    Options
-    --sticker -s    Get a sticker gif
-    --clip -c       Copy gif url to clipboard
-    --height        Set gif height [Default: 250px]
-    --width         Set gif width [Default: auto]
+Usage
+$ gif-term <text>
 
-    Examples
-    $ gif-term 'monday cat'
-    $ gif-term 'facepalm' --clip
+Options
+--sticker -s    Get a sticker gif
+--clip -c       Copy gif url to clipboard
+--height -h     Set gif height [Npx|N%|N|'auto']
+--width -w      Set gif width [Npx|N%|N|'auto']
 
-    Run it without text input to enter search mode.
+Examples
+$ gif-term 'this is awesome'
+$ gif-term 'facepalm' --clip --width=100%
+
+Run it without arguments to enter search mode.
 ```
-
 
 ## Related
 
-- [gif-term](https://github.com/astelvida/gif-term) - API for this module
+- [gif-term](https://github.com/astelvida/gif-term) - API for this module, check out for more details
 
 ## License
 
