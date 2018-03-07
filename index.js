@@ -7,15 +7,16 @@ const getCursorPosition = require('get-cursor-position');
 const ora = require('ora');
 
 async function run (text, flags) {
-    let pos;
     let output;
     let url;
     let error;
+    let pos;
     let isRendered;
     let hasStarted = false;
     let spinner;
-
     text = text || '';
+
+    process.stdout.write(t.cursorHide);
 
     function handleExit(clip = false, message = '') {
         if (clip && !error && url && isRendered) {
@@ -30,7 +31,7 @@ async function run (text, flags) {
         process.exit(0);
     }
 
-    async function setGifData() {
+    async function fetchAndSetGif() {
         spinner = ora(text).start();
         const data = await gifTerm.data(text, flags) || {};
         output = data.imgStr || data.errorMsg;
@@ -39,13 +40,15 @@ async function run (text, flags) {
     }
 
     if (text) {
-        await setGifData();
+        await fetchAndSetGif();
         spinner.clear();
-        console.log(output);
+        console.log('\n' + output);
         pos = getCursorPosition.sync();
-        isRendered = !error;
+        isRendered = true;
+        process.stdout.write(t.cursorRestorePosition);
         return handleExit(flags.clip);
     }
+    
     readline.emitKeypressEvents(process.stdin);
     process.stdin.setRawMode(true);
 
@@ -54,25 +57,22 @@ async function run (text, flags) {
     process.stdout.write('\n');
     process.stdout.write(t.cursorSavePosition);
     process.stdout.write(prompt + ' ');
-
     process.stdout.write(chalk`{bold.dim ${introMsg}}`);
 
     process.stdin.on('keypress', async (str, key) => {
         if (key.name === 'return') {
-            if (text) {
-                process.stdout.write('\r');
-                await setGifData();
+            if (!text) return;
+            
+            process.stdout.write('\r');
+            await fetchAndSetGif();
 
-                readline.clearScreenDown(process.stdout);
-                console.log('\n' + output);
-                pos = getCursorPosition.sync();
-                isRendered = true;
-                
-                process.stdout.write(t.cursorRestorePosition);
-                spinner.stopAndPersist({ symbol: prompt });
-                readline.moveCursor(process.stdout, text.length + 2, -1);
-            }
-            return;
+            readline.clearScreenDown(process.stdout);
+            console.log('\n' + output);
+            pos = getCursorPosition.sync();
+            isRendered = true;
+            process.stdout.write(t.cursorRestorePosition);
+            spinner.stopAndPersist({ symbol: prompt });
+            readline.moveCursor(process.stdout, text.length + 2, -1);
          
         } else if (key.name === 'escape' || (key.ctrl && key.name === 'c')) {
             if (error || !isRendered) return handleExit(false);
@@ -81,7 +81,6 @@ async function run (text, flags) {
             
             let row = (!pos || !pos.row) ? getCursorPosition.sync().row : pos.row;
             readline.cursorTo(process.stdout, 0, row - 1);
-            readline.clearLine(process.stdout, 0);
 
             process.stdout.write(chalk`{hex('#1DE9B6').bold ? } {bold.dim Save to clipboard? {white (y/N)}} `);
             process.stdin.on('keypress', (char, key) => {
@@ -89,14 +88,13 @@ async function run (text, flags) {
                 return handleExit(clip);
             });
 
-            
         } else if (key.name === 'backspace') {
-            if (text) {
-                text = text.slice(0, text.length - 1);
-                readline.moveCursor(process.stdout, -1, 0)
-                readline.clearLine(process.stdout, 1);
-            }
+            if (!text) return;
 
+            text = text.slice(0, text.length - 1);
+            readline.moveCursor(process.stdout, -1, 0)
+            readline.clearLine(process.stdout, 1);
+    
         } else if (str && key.ctrl === false) {
             if (!hasStarted) {
                 readline.moveCursor(process.stdout, - introMsg.length, 0);
