@@ -1,7 +1,7 @@
 {
     "name": "gif-term-cli",
     "version": "1.0.0",
-    "description": "Translate text to a relevant GIF and display it in the terminal",
+    "description": "Search for a GIF by a word or phrase and display it in the terminal.",
     "license": "MIT",
     "author": {
         "name": "astelvida",

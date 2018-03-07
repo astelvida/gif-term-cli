@@ -7,8 +7,6 @@ const { run } = require('./index.js');
 
 const cli = meow(
     `
-        Express yourself with gifs on the command line.
-
         Usage
         $  gif-term <text>
     
@@ -22,8 +20,7 @@ const cli = meow(
         $ gif-term 'monday cat'
         $ gif-term 'facepalm' --clip --width=100%
 
-        Run it without arguments to enter live search.
-        Press the return key to find keep looking for gif matches (similar to slack giphy).
+        Run it without arguments to enter search mode (similar to slack giphy).
     `,
     {
         flags: {
