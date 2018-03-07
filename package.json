@@ -1,31 +1,28 @@
 {
-    "name": "@astelvida/gifcat-cli",
+    "name": "gif-term-cli",
     "version": "1.0.0",
-    "description": "Translate text to gifs - CLI tool",
+    "description": "Translate text to a relevant GIF and display it in the terminal",
     "license": "MIT",
     "author": {
         "name": "astelvida",
         "email": "sevda.m.anefi@gmail.com"
     },
+    "homepage": "https://github.com/astelvida/gif-term-cli",
     "repository": {
         "type": "git",
-        "url": ""
+        "url": "https://github.com/astelvida/gif-term-cli.git"
+    },
+    "engines": {
+        "node": ">=8"
     },
     "dependencies": {
-        "@astelvida/gifcat": "^1.0.4",
         "ansi-escapes": "^3.0.0",
         "chalk": "^2.3.1",
         "clipboardy": "^1.2.3",
-        "debounce": "^1.1.0",
         "get-cursor-position": "^1.0.5",
-        "got": "^8.2.0",
-        "lodash.debounce": "^4.0.8",
+        "gif-term": "^1.0.0",
         "meow": "^4.0.0",
-        "prompts": "^0.1.1",
-        "random-emoji": "^1.0.2",
-        "random-word-wikipedia": "^1.0.5",
-        "supervillains": "^1.0.0",
-        "terminal-char-width": "^1.0.8"
+        "ora": "^2.0.0"
     },
     "devDependencies": {
         "ava": "^0.25.0"
@@ -36,6 +33,7 @@
         "giphy",
         "image",
         "iterm",
+        "api",
         "iterm2",
         "terminal",
         "console",

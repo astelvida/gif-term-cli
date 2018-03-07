@@ -3,32 +3,27 @@
 const path = require('path');
 const meow = require('meow');
 
-const { run, runTv } = require('./index.js');
+const { run } = require('./index.js');
 
 const cli = meow(
     `
         Express yourself with gifs on the command line.
 
         Usage
-        $  gifcat [<text>] [options] - translate text to gif (random gif if no text)
+        $  gif-term <text>
     
         Options
         --sticker -s    Get a sticker gif
-
         --clip -c       Copy gif url to clipboard
-        
-        --height        Set gif height [pixels|% of term screen height|rowNum|autoscale] [Default: 250px]
-        
-        --width         Set gif width [pixels|% of term screen width|colNum|autoscale] [Default: auto]
+        --height -h     Set gif height
+        --width -w      Set gif width
     
-        --tv            Go into tv mode - browse channels interactively
-
         Examples
-        $ gifcat 'monday cat' --clip
-        $ gifcat 'snl' --tv
+        $ gif-term 'monday cat'
+        $ gif-term 'facepalm' --clip --width=100%
 
-        Run it without arguments to enter live search. 
-        Use the '--tv' option to stream gifs in your terminal and change channels in the prompt.
+        Run it without arguments to enter live search.
+        Press the return key to find keep looking for gif matches (similar to slack giphy).
     `,
     {
         flags: {
@@ -52,18 +47,9 @@ const cli = meow(
                 default: 'auto',
                 alias: 'w',
             },
-            tv: {
-                type: 'boolean',
-                default: false,
-            },
         }
     }
 );
 
 
-
-if (cli.flags.tv) {
-    runTv(cli.input[0], cli.flags);
-} else {
-    run(cli.input[0], cli.flags);
-}
+run(cli.input[0], cli.flags);
