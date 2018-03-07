@@ -1,4 +1,4 @@
-# gif-term-cli
+# gif-term-cli [![Build Status](https://travis-ci.org/astelvida/gif-term-cli.svg?branch=master)](https://travis-ci.org/astelvida/gif-term-cli)
 
 >  Search GIFs by a word or phrase and display a match in the terminal. Like *Giphy for Slack*, but for the terminal.
 
@@ -15,7 +15,7 @@ $ npm install --global gif-term-cli
 ## Usage
 
 ```
-term-img --help
+gif-term --help
 
 Usage
 $ gif-term <text>
@@ -39,4 +39,4 @@ Run it without arguments to enter search mode.
 
 ## License
 
-MIT ©
+MIT
