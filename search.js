@@ -12,6 +12,7 @@ async function search (text, flags) {
     let error;
     let pos;
     let isRendered;
+    let isFetching = false;
     let hasStarted = false;
     let spinner;
     text = text || '';
@@ -60,10 +61,14 @@ async function search (text, flags) {
     process.stdout.write(chalk`{bold.dim ${introMsg}}`);
 
     process.stdin.on('keypress', async (str, key) => {
+        if (isFetching) {
+            return;
+        }
         if (key.name === 'return') {
             if (!text) return;
             
             process.stdout.write('\r');
+            isFetching = true;
             await fetchAndSetGif();
 
             readline.clearScreenDown(process.stdout);
@@ -71,8 +76,10 @@ async function search (text, flags) {
             pos = getCursorPosition.sync();
             isRendered = true;
             process.stdout.write(t.cursorRestorePosition);
+            isFetching = false;
             spinner.stopAndPersist({ symbol: prompt });
             readline.moveCursor(process.stdout, text.length + 2, -1);
+            return;
          
         } else if (key.name === 'escape' || (key.ctrl && key.name === 'c')) {
             if (error || !isRendered) return handleExit(false);

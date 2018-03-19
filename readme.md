@@ -37,6 +37,8 @@ Run it without arguments to enter search mode.
 
 - [gif-term](https://github.com/astelvida/gif-term) - API for this module, check out for more details
 
+- [term-img-cli](https://github.com/sindresorhus/term-img-cli) - Thanks to sindresorhus for the insipration 🙏
+
 ## License
 
 MIT
