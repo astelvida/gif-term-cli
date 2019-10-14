@@ -12,7 +12,7 @@
         "url": "https://github.com/astelvida/gif-term-cli.git"
     },
     "engines": {
-        "node": ">=8.0.0 <11.0.0"
+        "node": ">=8.0.0 <12.0.0"
     },
     "bin": {
         "gif-term": "cli.js"
@@ -22,9 +22,9 @@
         "chalk": "2.3.1",
         "gif-term": "^1.0.0",
         "clipboardy": "1.2.3",
-        "get-cursor-position": "1.0.5",
-        "meow": "^4.0.0",
-        "ora": "^2.0.0"
+        "get-cursor-position": "^1.0.5",
+        "meow": "4.0.0",
+        "ora": "2.0.0"
     },
     "keywords": [
         "gif",
