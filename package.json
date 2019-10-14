@@ -1,6 +1,6 @@
 {
     "name": "gif-term-cli",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Search for a GIF by a word or phrase and display it in the terminal.",
     "author": {
         "name": "astelvida",
