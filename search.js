@@ -20,10 +20,17 @@ async function fetchGif(text, flags) {
     return { output, url, error }
 }
 
+function checkClip (url, condition) {
+    let copyAnswer = chalk.green('✔ ') + 'link copied to clipboard'
+    if (condition) {
+        clipboardy.writeSync(url);
+        console.log(copyAnswer)
+    }
+}
+
 async function search(text, flags) {
     let data = {}
     let spinner = null
-    let copyAnswer = chalk.green('✔ ') + 'link copied to clipboard'
     let intro = chalk.white('Type something and press the ' + chalk.bold('<enter>') + ' key to find a GIF');
     let question = chalk.white.bold(chalk.greenBright('? ') + 'Save GIF link? ' + chalk.reset('(y/n) '))
     let prompt = chalk.cyan('❯')
@@ -33,13 +40,12 @@ async function search(text, flags) {
         data = await fetchGif(text, flags)
         spinner.stopAndPersist({ symbol: prompt, text: chalk.cyan(text) })
         console.log(data.output || data.error);
-        if (flags.clip && !data.error) {
-            clipboardy.writeSync(data.url);
-            console.log(copyAnswer)
-        }
+        checkClip( data.url, flags.clip && !data.error)
         process.exit(0)
         return
     }
+
+    console.log(intro)
 
     const rl = readline.createInterface({
         input: process.stdin,
@@ -47,7 +53,6 @@ async function search(text, flags) {
         prompt: prompt + ' '
     });
 
-    console.log(intro)
     rl.prompt();
 
     rl.on('line', async (line) => {
@@ -78,20 +83,18 @@ async function search(text, flags) {
         }
 
         rl.question(question, (answer) => {
-            if (answer.match(/^y(es)?$/i)) {
-                clipboardy.writeSync(data.url);
-                console.log(copyAnswer)
-            }
+            checkClip(data.url, answer.match(/^y(es)?$/i))
             rl.pause();
         });
         
     }).on('close', () => {
         readline.clearLine(rl.output, -1)
         readline.moveCursor(rl.output, -3, 0)
-
         console.log(chalk.yellow('Bye!'))
         process.exit(0)
     });
+
+
 
 }
 
