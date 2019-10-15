@@ -2,126 +2,82 @@ const gifTerm = require('gif-term');
 const readline = require('readline');
 const chalk = require('chalk');
 const clipboardy = require('clipboardy');
-const t = require('ansi-escapes');
-const getCursorPosition = require('./cursor-position.js');
-
 const ora = require('ora');
 
 
-async function search(text, flags) {
-    let output;
-    let url;
-    let error;
-    let currentPosition;
-    let isFetching = false;
-    let hasStarted = false;
-    text = text || '';
-    let spinner = ora(text)
-    let copiedMsg = chalk`{hex('#1DE9B6') ✔} {hex('#B388FF') gif copied to clipboard}`
+function search(inputText, flags) {
+    let data = {}
+    let spinner = null
+    let copyAnswer = chalk.green('✔ ') + 'link copied to clipboard'
+    let intro = chalk.white('Type something and press the ' + chalk.bold('<enter>') + ' key to find a GIF');
+    let question = chalk.white.bold(chalk.greenBright('? ') + 'Save GIF link? ' + chalk.reset('(y/n) '))
+    let prompt = chalk.cyan('❯')
+
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+        prompt: prompt + ' '
+    });
 
 
-    function handleExit(clip = false) {
-        let message = ''
-        if (error) {
-            message = error
-        } else if (clip) {
-            clipboardy.writeSync(url);
-            message = copiedMsg
-        } 
-        currentPosition = currentPosition || getCursorPosition.sync()
-        readline.clearLine(process.stdout, 0);
-        readline.cursorTo(process.stdout, 0, currentPosition.row)
-
-        process.stdout.write(message + '\n');
-        process.exit(0);
+    function getErrorOutput(err) {
+        return chalk.bold(chalk.red('>>> ') + chalk.gray(err))
     }
-    async function fetchAndSetGif() {
-        const data = await gifTerm.data(text, flags) || {};
-        output = data.imgStr
-        url = data.url || '';
-        error = data.errorMsg || '';
+    async function fetchGif(text, flags) {
+        const {
+            imgStr: output = null,
+            errorMsg,
+            url = null,
+        } = await gifTerm.data(text, flags) || {}
+        const error = getErrorOutput(errorMsg)
+        return { output, url, error }
     }
 
-    process.stdout.write(t.cursorHide);
+    console.log(intro)
+    rl.prompt();
 
-    if (text) {
-        spinner.start()
-        await fetchAndSetGif();
-        spinner.clear();
-        process.stdout.write(output + '\n');
-        currentPosition = getCursorPosition.sync();
-        return handleExit(flags.clip);
-    }
+    rl.on('line', async (line) => {
+        let text = line.trim()
 
-    readline.emitKeypressEvents(process.stdin);
-    process.stdin.setRawMode(true);
-
-    const introMsg = 'start typing and hit return to get matching GIF';
-    const prompt = chalk`{hex('#1DE9B6') ❯}`;
-    process.stdout.write(prompt + ' ');
-    process.stdout.write(chalk`{bold.dim ${introMsg}}`);
-
-    
-
-    process.stdin.on('keypress', async (str, key) => {
-
-        if (isFetching || !str) {
-            return;
-        } 
-
-        if (key.name === 'return') {
-            
-            isFetching = true
-            spinner.start();
-            
-            await fetchAndSetGif();
-
-            spinner.stopAndPersist({ symbol: prompt, text });
-            process.stdout.write(t.cursorHide);
-
-            readline.clearScreenDown(process.stdout);
-            process.stdout.write(output + '\n');
-            
-            currentPosition = getCursorPosition.sync();
-            readline.cursorTo(process.stdout, 0, currentPosition.row)
-            process.stdout.write(prompt + ' ' + text);
-            process.stdout.write(t.cursorShow);
-            
-            isFetching = false
-            return;
-
-        } else if (key.name === 'escape' || (key.ctrl && key.name === 'c')) {
-            currentPosition = currentPosition || getCursorPosition.sync()
-            readline.cursorTo(process.stdout, 0, currentPosition.row);
-            process.stdout.write(chalk`{hex('#1DE9B6').bold ? } {bold.dim Save to clipboard? {white (y/N)}}`);
-
-            process.stdin.on('keypress', (char, key) => {
-                let clip = (char && char.match(/(y|yes|yeah|yep)/gi));
-                return handleExit(clip);
-            });
-
-        } else if (key.name === 'backspace') {
-            if (!text) return
-            text = text.slice(0, text.length - 1);
-            readline.moveCursor(process.stdout, -1, 0)
-            readline.clearLine(process.stdout, 1);
-
-        } else if (str && key.ctrl === false) {
-            if (!hasStarted) {
-                readline.moveCursor(process.stdout, - introMsg.length, 0);
-                readline.clearLine(process.stdout, 1);
-                hasStarted = true;
-            }
-            text += key.sequence;
-            process.stdout.write(str);
+        switch (text) {
+            case '':
+                const error = getErrorOutput('Need to write something...')
+                console.log(error)
+                break;
+            default:
+                readline.clearLine(rl.input, 0)
+                readline.moveCursor(rl.input, 0, -1)
+                spinner = ora(text).start()
+                data = await fetchGif(text, flags)
+                spinner.stopAndPersist({ symbol: prompt, text: chalk.dim.bold(text) })
+                console.log(data.output || data.error);
+                break;
         }
-    })
 
-    process.stdin.on('error',
-        (err) => {
-            error = err.message
-            handleExit(false)
-        })
+        rl.prompt();
+
+    }).on('SIGINT', () => {
+        if (!data.url) {
+            rl.close()
+            return
+        }
+
+        rl.question(question, (answer) => {
+            if (answer.match(/^y(es)?$/i)) {
+                clipboardy.writeSync(data.url);
+                console.log(copyAnswer)
+            }
+            rl.pause();
+        });
+        
+    }).on('close', () => {
+        readline.clearLine(rl.output, -1)
+        readline.moveCursor(rl.output, -3, 0)
+
+        console.log(chalk.yellow('Bye!'))
+        process.exit(0)
+    });
+
 }
 
 module.exports = { search };
