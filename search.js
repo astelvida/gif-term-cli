@@ -5,7 +5,22 @@ const clipboardy = require('clipboardy');
 const ora = require('ora');
 
 
-function search(inputText, flags) {
+function getErrorOutput(err) {
+    return err ? chalk.bold(chalk.red('>>> ') + chalk.gray(err)) : ''
+}
+
+
+async function fetchGif(text, flags) {
+    const {
+        imgStr: output = null,
+        errorMsg,
+        url = null,
+    } = await gifTerm.data(text, flags) || {}
+    const error = getErrorOutput(errorMsg)
+    return { output, url, error }
+}
+
+async function search(text, flags) {
     let data = {}
     let spinner = null
     let copyAnswer = chalk.green('✔ ') + 'link copied to clipboard'
@@ -13,25 +28,24 @@ function search(inputText, flags) {
     let question = chalk.white.bold(chalk.greenBright('? ') + 'Save GIF link? ' + chalk.reset('(y/n) '))
     let prompt = chalk.cyan('❯')
 
+    if (text) {
+        spinner = ora(text).start()
+        data = await fetchGif(text, flags)
+        spinner.stopAndPersist({ symbol: prompt, text: chalk.cyan(text) })
+        console.log(data.output || data.error);
+        if (flags.clip && !data.error) {
+            clipboardy.writeSync(data.url);
+            console.log(copyAnswer)
+        }
+        process.exit(0)
+        return
+    }
+
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
         prompt: prompt + ' '
     });
-
-
-    function getErrorOutput(err) {
-        return chalk.bold(chalk.red('>>> ') + chalk.gray(err))
-    }
-    async function fetchGif(text, flags) {
-        const {
-            imgStr: output = null,
-            errorMsg,
-            url = null,
-        } = await gifTerm.data(text, flags) || {}
-        const error = getErrorOutput(errorMsg)
-        return { output, url, error }
-    }
 
     console.log(intro)
     rl.prompt();
@@ -49,8 +63,9 @@ function search(inputText, flags) {
                 readline.moveCursor(rl.input, 0, -1)
                 spinner = ora(text).start()
                 data = await fetchGif(text, flags)
-                spinner.stopAndPersist({ symbol: prompt, text: chalk.dim.bold(text) })
+                spinner.stopAndPersist({ symbol: prompt, text: chalk.cyan(text) })
                 console.log(data.output || data.error);
+
                 break;
         }
 
